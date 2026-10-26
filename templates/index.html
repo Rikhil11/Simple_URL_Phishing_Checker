@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple URL Phishing Checker</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-icon">✓</span>
+            <span>URL Risk Checker</span>
+        </div>
+        <span class="project-tag">CYBERSECURITY PROJECT</span>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="eyebrow">PYTHON • FLASK • RULE-BASED ANALYSIS</div>
+            <h1>Simple URL <span>Phishing Checker</span></h1>
+            <p>
+                Check a URL for common suspicious characteristics and
+                understand its basic risk score.
+            </p>
+        </section>
+
+        <section class="checker-card">
+            <h2>Analyze a URL</h2>
+            <p class="muted">
+                Enter a complete URL beginning with http:// or https://.
+            </p>
+
+            <form method="POST" action="/">
+                <label for="url">Website URL</label>
+                <input
+                    type="text"
+                    id="url"
+                    name="url"
+                    placeholder="https://example.com"
+                    value="{{ entered_url }}"
+                    maxlength="2048"
+                    required
+                    autocomplete="url"
+                >
+
+                <div class="button-row">
+                    <button type="submit" class="check-button">
+                        Check URL →
+                    </button>
+                    <a href="/" class="clear-button">Clear</a>
+                </div>
+            </form>
+
+            {% if error %}
+                <div class="error-message" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </section>
+
+        {% if result %}
+        <section class="result-card">
+            <div class="result-heading">
+                <div>
+                    <div class="eyebrow">ANALYSIS RESULT</div>
+                    <h2>Risk Assessment</h2>
+                </div>
+                <span class="risk-badge {{ result.level }}">
+                    {{ result.risk }}
+                </span>
+            </div>
+
+            <div class="score-panel">
+                <div>
+                    <span class="score-label">Total Risk Score</span>
+                    <div class="score-number">{{ result.score }}</div>
+                    <span class="muted">out of 90 possible points</span>
+                </div>
+                <div class="score-scale">
+                    <div class="scale-track">
+                        <div class="scale-fill {{ result.level }}"
+                             style="width: {{ (result.score / 90 * 100)|round }}%">
+                        </div>
+                    </div>
+                    <div class="scale-labels">
+                        <span>Low: 0–29</span>
+                        <span>Medium: 30–59</span>
+                        <span>High: 60+</span>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Indicators and warnings</h3>
+
+            <div class="reasons-list">
+                {% for reason in result.reasons %}
+                <div class="reason-item">
+                    <div class="reason-icon">
+                        {% if reason.points > 0 %}!
+                        {% else %}✓{% endif %}
+                    </div>
+                    <div class="reason-text">
+                        <strong>{{ reason.name }}</strong>
+                        <p>{{ reason.detail }}</p>
+                    </div>
+                    <span class="points">
+                        {% if reason.points > 0 %}
+                            +{{ reason.points }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="disclaimer">
+                <strong>Important:</strong> This is an educational warning
+                tool, not a professional threat-detection system.
+                A low score does not guarantee that a website is safe,
+                and a high score does not prove that it is phishing.
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="indicators">
+            <h2>What does the checker look for?</h2>
+            <div class="indicator-grid">
+                <div class="indicator">
+                    <span class="indicator-symbol">01</span>
+                    <strong>HTTPS</strong>
+                    <p>Missing HTTPS: +20 points</p>
+                </div>
+                <div class="indicator">
+                    <span class="indicator-symbol">02</span>
+                    <strong>URL Length</strong>
+                    <p>More than 75 characters: +15</p>
+                </div>
+                <div class="indicator">
+                    <span class="indicator-symbol">03</span>
+                    <strong>IP Address</strong>
+                    <p>Numeric IP hostname: +25</p>
+                </div>
+                <div class="indicator">
+                    <span class="indicator-symbol">04</span>
+                    <strong>@ Symbol</strong>
+                    <p>Contains @: +20 points</p>
+                </div>
+                <div class="indicator">
+                    <span class="indicator-symbol">05</span>
+                    <strong>Keywords</strong>
+                    <p>Selected suspicious words: +10</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Simple URL Phishing Checker · B.Tech CSE · 3rd Semester</p>
+            <p>Rule-based analysis · No external API required</p>
+        </footer>
+    </main>
+</body>
+</html>
